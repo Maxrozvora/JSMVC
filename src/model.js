@@ -10,11 +10,13 @@ class Model {
 
     addItem(item) {
         this.state.push(item);
+        return item;
     }
 
     updateItem(id, data) {
         const item = this.getItem(id);
         Object.keys(data).forEach(prop => item[prop] =data[prop]);
+        return item;
     }
 
     removeItem(id) {

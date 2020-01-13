@@ -1,7 +1,8 @@
-import {createElement} from "./helpers";
+import {createElement, EventEmitter} from "./helpers";
 
-class View {
+class View extends EventEmitter{
     constructor() {
+        super();
         this.form = document.getElementById('todo-form');
         this.input = document.getElementById('add-input');
         this.list = document.getElementById('todo-list');
@@ -25,14 +26,14 @@ class View {
         return this.addEventListeners(item);
     }
 
-    addEventListeners(item) {
+    addEventListeners(listItem) {
         const checkbox = listItem.querySelector('.checkbox');
-        const editButton = listItem.querySelector('button.edit');
-        const removeButton = listItem.querySelector('remove');
+        const editButton = listItem.querySelector('button.editButton');
+        const removeButton = listItem.querySelector('.remove');
         checkbox.addEventListener('change', this.handleToggle.bind(this));
         editButton.addEventListener('click', this.handleEdit.bind(this));
         removeButton.addEventListener('click', this.handleRemove.bind(this));
-        return item;
+        return listItem;
     }
 
     handleToggle({target}) {
@@ -40,6 +41,10 @@ class View {
         const id = listItem.getAttribute('data-id');
         const completed = target.completed;
         // update model;
+
+        this.emit('toggle', {
+            id, completed
+        })
 
     }
 
@@ -54,6 +59,7 @@ class View {
 
         if (isEditing) {
             // update model;
+            this.emit('edit', {id, title})
         } else {
             input.value = label.textContent;
             editButton.textContent = 'Сохранить';
@@ -63,8 +69,9 @@ class View {
 
     handleRemove({target}) {
         const listItem = target.parentNode;
-
+        const id = listItem.getAttribute('id');
         // remove item form model;
+        this.emit('remove', id)
 
     }
 
@@ -74,6 +81,7 @@ class View {
 
         const value =  this.input.value;
 
+        this.emit('add', value)
         // add item to model;
     }
 
